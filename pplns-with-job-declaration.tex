@@ -1,63 +1,17 @@
-% !TEX TS-program = pdflatex
-% !TEX encoding = UTF-8 Unicode
+\documentclass[11pt]{article} 
 
-% This is a simple template for a LaTeX document using the "article" class.
-% See "book", "report", "letter" for other types of document.
-
-\documentclass[11pt]{article} % use larger type; default would be 10pt
-
-\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+\usepackage[utf8]{inputenc} 
 \usepackage{amsmath}
 \usepackage{hyperref}
 
-%%% Examples of Article customizations
-% These packages are optional, depending whether you want the features they provide.
-% See the LaTeX Companion or other references for full information.
+\usepackage{geometry}
+\geometry{a4paper}
 
-%%% PAGE DIMENSIONS
-\usepackage{geometry} % to change the page dimensions
-\geometry{a4paper} % or letterpaper (US) or a5paper or....
-% \geometry{margin=2in} % for example, change the margins to 2 inches all round
-% \geometry{landscape} % set up the page for landscape
-%   read geometry.pdf for detailed page layout information
-
-\usepackage{graphicx} % support the \includegraphics command and options
-
-% \usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
-
-%%% PACKAGES
-\usepackage{booktabs} % for much better looking tables
-\usepackage{array} % for better arrays (eg matrices) in maths
-\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
-\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
-\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
-% These packages are all incorporated in the memoir class to one degree or another...
-
-%%% HEADERS & FOOTERS
-\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
-\pagestyle{fancy} % options: empty , plain , fancy
-\renewcommand{\headrulewidth}{0pt} % customise the layout...
-\lhead{}\chead{}\rhead{}
-\lfoot{}\cfoot{\thepage}\rfoot{}
-
-%%% SECTION TITLE APPEARANCE
-\usepackage{sectsty}
-\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
-% (This matches ConTeXt defaults)
-
-%%% ToC (table of contents) APPEARANCE
-\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
-\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
-\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
-\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
-
-%%% END Article customizations
-
-%%% The "real" document content comes below...
+\usepackage{subfig}
 
 \title{PPLNS with Job Declaration}
 \author{Lorenzo Bonazzi, Filippo Merli}
-%\date{} % Activate to display a given date or no date (if empty),
+\date{August 28, 2024} % Activate to display a given date or no date (if empty),
          % otherwise the current date is printed 
 
 \begin{document}
@@ -66,7 +20,7 @@
 \section{Introduction}
 
 Right now, payout schemes for miners account only for provided hash power.
-One of the biggest bitcoin issue is the centralization of transaction selection, this issue is solved by Stratum v2 \cite{sv2}. Given that Stratum v2 let the miner select their own transaction (this feature is known as \emph{Job Declaration}), and that transactions fees might become the most important part of the mining reward, we need a system that calculate the payouts based both on selected transactions and hash power provided. The system proposed expands PPLNS (see \cite{rosenfeld} and \cite{ocean}), so that miner will get paid in a fair way given the hash power provided, and the fees in the mined job. The core idea is that a miner perfoming Job Declaration who is more capable to find the best set of transactions in terms of fee over vbytes (and consequentially in fees of the block template), should be rewarded more. The system proposed can be implemented as an extension of Sv2 \cite{extension} and it is easly accountable, so that miners' trust in pool operator is minimized. 
+One of the biggest bitcoin issue is the centralization of transaction selection, this issue is solved by Stratum v2 \cite{sv2}. Given that Stratum v2 let the miner select their own transaction (this feature is known as \emph{Job Declaration}), and that transactions fees might become the most important part of the mining reward, we need a system that calculate the payouts based both on selected transactions and hash power provided. We propose a new payment schema, called PPLNS-JD, that expands PPLNS (see \cite{rosenfeld} and \cite{ocean}), so that miner will get paid in a fair way given the hash power provided, and the fees in the mined job. The core idea is that a miner perfoming Job Declaration who is more capable to find the best set of transactions in terms of fee over vbytes (and consequentially in fees of the block template), should be rewarded more. PPLNS-JD can be implemented as an extension of Sv2 \cite{extension} and it is easly accountable, so that miners' trust in pool operator is minimized. 
 
 We define a fair payment schema that splits the share payout in two parts. The first comes from the coinbase and pays accordingly to the difficulty score of the share, in the same fashion as PPLNS. The second comes from the block fee and pays accordigly to share difficulty score and the share fee score in such a way that share with the highest fee in its group of shares (slice, see below) is paid at least $F_S/n$, where $F_S$ is the part of the block fee reserved to that group of shares $S$ and $n$ is the number of shares in $S$.
 
@@ -76,14 +30,6 @@ In order to pay shares in a fair way with respect to fees, they must be scored s
 We call a group of shares whose fees can be scored (and the scores can be compared) a \emph{slice}, which is a portion of the stream of shares. As we seen in the previous paragraph, a slice must not cross two mining rounds. With other words, all shares in one slice must have the same prevhash. It is needed an introduction before giving the precise definition of a slice.
 
 Note that within a mining round, MMEF can not decrease. Indeed,  the only way to remove high fees transactions from mempool is to have them mined. Therefore, MMEF grows monotonically within a single mining round. If a slice consists of \emph{all} the shares with the same prevhash (namely the slice consists of the shares produced between two consecutive blocks), there are some incentives for miners to performs a variation of pool hopping (see Appendix).
-
-\begin{comment}
-In order to pay fairly shares taking in consideration fees, it is appriopriate to compare shares relative to the same round of mining. Indeed, it is difficult to find a tool capable of scoring two shares produced in two moment in which the mempool differs consistently. So, we can only compare shares with the same prevhash.
-
-
-The above system do not account for the fact that the mempool maximum extractable fees (MMEF) change, and grows monotonically between block n and block n+1. This can be verified empirically, to notethat between 2 block MMEF can not decrease cause the only way to remove high fees transactions
-from mempool is to put them in a block. This give an incentive to the miners to do pool hopping (TODO).
-\end{comment}
 
 To remove this incentive, slices must be shorter than the entire mining round. Intuitively, they must be short enough to be possible for the fees to be approximated as constant. Since a slice ends when starts the following one, it is enough define when a slice begins. Note that the slices are created by the pool and recall that they are used to calculate the score based on fees. To each slice is associated a reference job. Fix $f$ the fees of a particular reference job. Let $\delta>0$ chosen by the pool. Then, every share that belong to the slices relative to the reference job must have fees lower than
 \[ f+\delta.\]
@@ -111,9 +57,6 @@ where $d_j$ is the difficulty of the share $s_j$ (for example, \cite{ocean} sugg
 \textbf{Remark.} 
 \[\sum_{j=1}^N score_d(s_i) = 1\] and that this score depends only on difficulty.
 \subsection{Fee-based score}
-\begin{comment} We recall that a slice is denoted with $S_{a,\ell}$ with $\ell$ is the prevhash and $0 \le a \le n_\ell$, with $n_\ell$ is the number of slices for the group $B_\ell$ of all the shares that have the same prevhash $\ell$. We recall also that to each slice $S_{a,\ell}$ is assigned a portion of the block fees $F_{S_{a, \ell}}$.\newline
-Now it is given a method for scoring the shares within a slice and redistributing $F_{S_{a, \ell}}$ accorindgly. Since we are working within a single slice, there is no need to keep track of the indexes. So, in order to keep the notation light, with abuse of notation we simply denote $S_{a, \ell}$ with and $F_{S_{a, \ell}}$ with $F_S$.
-\end{comment}
 Suppose we want to score the $i$-th share $s_i$, and suppose that this share belongs to a slice $S$ that contains all the shares from the $k_1$-th to the $k_2$-th.
 For the $i$-th share, call $\bar d_i = score_d(s_i)$ its score difficulty (calculated as above) and $f_i$ the fees of the share (which depends on the transactions chosen in the template). For this share, define the score relative to the fee
 \[
