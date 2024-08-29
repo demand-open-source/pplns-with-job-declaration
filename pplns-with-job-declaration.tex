@@ -66,7 +66,7 @@
 \section{Introduction}
 
 Right now, payout schemes for miners account only for provided hash power.
-One of the biggest bitcoin issue is the centralization of transaction selection, this issue is solved by Stratum v2 \cite{sv2spec}. Given that Stratum v2 let the miner select their own transaction (this feature is known as \emph{Job Declaration}), and that transactions fees might become the most important part of the mining reward, we need a system that calculate the payouts based both on selected transactions and hash power provided. The system proposed expands PPLNS (see \cite{rosenfeld} and \cite{ocean}), so that miner will get paid in a fair way given the hash power provided, and the fees in the mined job. The core idea is that a miner perfoming Job Declaration who is more capable to find the best set of transactions in terms of fee over vbytes (and consequentially in fees of the block template), should be rewarded more. The system proposed can be implemented as an extension of Sv2 \cite{extension} and it is easly accountable, so that miners' trust in pool operator is minimized. 
+One of the biggest bitcoin issue is the centralization of transaction selection, this issue is solved by Stratum v2 \cite{sv2}. Given that Stratum v2 let the miner select their own transaction (this feature is known as \emph{Job Declaration}), and that transactions fees might become the most important part of the mining reward, we need a system that calculate the payouts based both on selected transactions and hash power provided. The system proposed expands PPLNS (see \cite{rosenfeld} and \cite{ocean}), so that miner will get paid in a fair way given the hash power provided, and the fees in the mined job. The core idea is that a miner perfoming Job Declaration who is more capable to find the best set of transactions in terms of fee over vbytes (and consequentially in fees of the block template), should be rewarded more. The system proposed can be implemented as an extension of Sv2 \cite{extension} and it is easly accountable, so that miners' trust in pool operator is minimized. 
 
 We define a fair payment schema that splits the share payout in two parts. The first comes from the coinbase and pays accordingly to the difficulty score of the share, in the same fashion as PPLNS. The second comes from the block fee and pays accordigly to share difficulty score and the share fee score in such a way that share with the highest fee in its group of shares (slice, see below) is paid at least $F_S/n$, where $F_S$ is the part of the block fee reserved to that group of shares $S$ and $n$ is the number of shares in $S$.
 
@@ -172,6 +172,11 @@ A miner must be sure that all the shares arrived to the pool are valid. Indeed, 
 Whenever a miner sends a share to the pool, the pool answers with the actual reference job so the miner can verify if the ref job fees + delta fees are higher then the share's job fees.
 
 If this system is implemented as an Sv2 extension, will be very easy for a miner to prove that a pool is cheating, since Sv2 is authenticated the miner have only to publish the Sv2 session with the handshake messages.
+
+\section{Ackowledgments}
+We would like to express our gratitude to Demand \cite{demand} for their collaboration throughout the development of this project. Additionally, we extend our thanks to the developers of the open-source project \emph{Stratum v2 Reference Implementation} (\cite{sv2}), whose contributions were crucial to the success of the Sv2 project.
+
+
 \appendix
 \section{Motivation for slices}
 In this appendix we show that if a slice is large enough, then there may be some incentives for a miner to perform a variation of pool hopping (see \cite{rosenfeld} for a definition of pool hopping). For doing so, we suppose that there are two pools:
@@ -217,19 +222,21 @@ Therefore, for a miner it is more profitable to mine with POOL-1 until $\bar i \
 It is worth pointing out that in PPLNS-JD in which the slices consists of all the shares with the same prevhash (therefore produced wihtin a single round of mining), a miner that remains at the beginning of the round may be disadvantaged. Indeed, at the beginning his shares worth less because of the low fees (that grow linearly with time). Then, after $\bar i \cdot 6 secs$, when supposedly the fees are higher and his shares may worth more, many other hopping miners join the pool, rising the pool hashrate. This will make the shares of the faithful miner to compete against many more shares, and therefore mitigating the relief of higher fees. In conclusion, there is a double disincentive for miner to be faithful to the POOL-2.
 
 \begin{thebibliography}{9}
+\bibitem{demand}
+Demand pool \url{https://www.dmnd.work/}
 
-\bibitem{sv2spec}
-Sv2 specifications: \url{https://github.com/stratum-mining/sv2-spec/}
+\bibitem{extension}
+Extension on share accounting
+\url{https://github.com/demand-open-source/share-accounting-ext/blob/master/extension.md}.
+	
+\bibitem{ocean}
+Ocean pool \url{https://ocean.xyz/docs/tides}
 
 \bibitem{rosenfeld}
 \emph{Analysis of Bitcoin Pooled Mining Reward Systems}, M. Rosenfeld, \url{https://arxiv.org/abs/1112.4980}
 
-\bibitem{ocean}
-\url{https://ocean.xyz/docs/tides}
-
-\bibitem{extension}
-Sv2 enxtension on share accounting, to appear.
-
+\bibitem{sv2}
+Stratum v2. Specifications: \url{https://github.com/stratum-mining/sv2-spec/} and Reference Implementation \url5{https://github.com/stratum-mining/stratum/}
 \end{thebibliography}
 
 \end{document}
