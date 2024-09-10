@@ -110,7 +110,7 @@ about:
 	\item Merkle root of the tree composed by all the shares that belong to the slice
 	\item Id of the reference job
 \end{itemize}
-A miner must be sure that all the shares arrived to the pool are valid. Indeed, if the pool is also a miner, there are some incentives to pay more itself then other miners. A method for doing so is to produce fake shares and pay them as they were valid. For avoiding that that, a miner can \emph{challenge} the pool:
+A miner must be sure that all the shares arrived to the pool are valid. Indeed, if the pool is also a miner, there are some incentives to pay more itself then other miners. A method for doing so is to produce fake shares and pay them as they were valid. For avoiding that, a miner can \emph{challenge} the pool:
 \begin{enumerate}
 	\item randomly select some slice that he is willing to check; for each selected slice randomly select some share in the slice
 	\item fetch the job and the transactions that are not in the cache for each selected share
