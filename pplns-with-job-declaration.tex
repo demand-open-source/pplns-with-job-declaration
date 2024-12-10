@@ -22,13 +22,13 @@
 \maketitle
 
 \section{Introduction}
-
-
 One of the biggest bitcoin issue is the centralization of transaction selection. Since in future transactions fees will become the largest percentage of the block reward, transaction selection will be more and more relevant for the miners payout. This issue is solved by Stratum v2 \cite{sv2}, which enables a miner to select their own block template and just declare to the pool the job they are mining on. This feature is known as \emph{Job Declaration}.  On the other hand, current payout schemes for mining pools account only for provided hash-rate, which is not ideal for Job Declaration.  Given that, the network needs a system that calculates payouts based both on selected transaction fees and hash-rate provided. 
 
 We propose a new payment schema, called PPLNS-JD, that expands PPLNS (see \cite{rosenfeld} and \cite{ocean}), so that miners will get paid in a fair way given the hash power provided, and the fees in the mined block template. The core idea is that a miner performing Job Declaration who is more capable to find the best set of transactions in terms of fee over vbytes (and consequentially in fees of the block template), should be rewarded more. PPLNS-JD splits the payout of each share in two parts. The first comes from the block subsidy and pays accordingly to the difficulty-based score of the share, in the same fashion as traditional PPLNS. The second comes from the block fee and pays accordingly to the share fee-based score in such a way that share with the highest fee in its group of shares (slice, see below) is paid at least $F_S/n$, where $F_S$ is the part of the block fee reserved to that group of shares $S$ and $n$ is the number of shares in $S$ (see Lemma \ref{better-miner-gets-paid-fairly}). 
 
 PPLNS-JD can be implemented as an extension of Sv2 \cite{extension} and it is easily accountable, so that miners' trust in pool operator is minimized. 
+
+This article is available here \cite{article}.
 
 
 \section{Slices}
@@ -144,8 +144,6 @@ A miner must be sure that all the shares received by the pool are valid. If the 
  
 Whenever a miner sends a share to the pool, it answers with the  reference job, so the miner can verify if the ref job fees + delta is higher than the share's job fees.
 
-If this system is implemented as an Sv2 extension, will be very easy for a miner to prove that a pool is cheating, since Sv2 is authenticated and the miner can publish the Sv2 session with the handshake messages.
-
 \section*{Ackowledgments}
 We would like to express our gratitude to Demand \cite{demand} for their collaboration throughout the development of this project. Additionally, we extend our thanks to the developers of the open-source project \emph{Stratum v2 Reference Implementation} (\cite{sv2}), whose contributions were crucial to the success of the Sv2 project.
 We would like to express our thanks also to Gary and Bernardo (@plebhash) for their thorough review of the manuscript and for providing numerous valuable suggestions.
@@ -221,7 +219,10 @@ Ocean pool \url{https://ocean.xyz/docs/tides}
 \emph{Analysis of Bitcoin Pooled Mining Reward Systems}, M. Rosenfeld, \url{https://arxiv.org/abs/1112.4980}
 
 \bibitem{sv2}
-Stratum v2. Specifications: \url{https://github.com/stratum-mining/sv2-spec/} and Reference Implementation \url5{https://github.com/stratum-mining/stratum/}
+Stratum v2. Specifications: \url{https://github.com/stratum-mining/sv2-spec/} and Reference Implementation \url{https://github.com/stratum-mining/stratum/}
+
+\bibitem{article}
+\url{https://lorbax.github.io/pplns-with-job-declaration/pplns-with-job-declaration.pdf} and \url{https://www.dmnd.work/pplns-with-job-declaration/pplns-with-job-declaration.pdf}
 \end{thebibliography}
 
 \end{document}
